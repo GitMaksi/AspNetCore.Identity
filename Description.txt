@@ -7,3 +7,6 @@ Przeznaczenie:
 
 Dostęp do innych projektów:
 -Referencje do projektów Application i Infrastructure.
+
+Migracja:
+dotnet ef migrations add InitialCreate --project "C:\Users\MAX\source\repos\CleanArchitecture.Infrastructure\CleanArchitecture.Infrastructure.csproj" --startup-project "C:\Users\MAX\source\repos\AspNetCore.Identity\CleanArchitecture.WebApi.csproj"
