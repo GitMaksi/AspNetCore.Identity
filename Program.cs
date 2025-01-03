@@ -1,8 +1,8 @@
-using AspNetCore.Identity.Database;
-using AspNetCore.Identity.Extensions;
+using CleanArchitecture.Infrastructure.Database;
+using CleanArchitecture.Infrastructure.Database.Models;
+using CleanArchitecture.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Security.Claims;
 
 internal class Program
@@ -16,7 +16,7 @@ internal class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
+         
         builder.Services.AddAuthorization();
 
         builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
@@ -50,6 +50,10 @@ internal class Program
         .RequireAuthorization();
 
         app.UseHttpsRedirection();
+
+        app.UseAuthentication();
+
+        app.UseAuthorization();
 
         app.MapControllers();
 

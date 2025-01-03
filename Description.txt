@@ -1,0 +1,9 @@
+﻿WebApi
+Typ projektu: ASP.NET Core Web API.
+
+Przeznaczenie:
+-Obsługa żądań HTTP i komunikacja z warstwą Application.
+-Zawiera kontrolery, mapowanie endpointów, konfigurację aplikacji (np. Program.cs, Startup.cs), oraz middleware.
+
+Dostęp do innych projektów:
+-Referencje do projektów Application i Infrastructure.
