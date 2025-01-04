@@ -1,8 +1,11 @@
+using CleanArchitecture.Application.Repositories;
+using CleanArchitecture.Domain.Models;
 using CleanArchitecture.Infrastructure.Database;
-using CleanArchitecture.Infrastructure.Database.Models;
+using CleanArchitecture.Infrastructure.Database.Repositories;
 using CleanArchitecture.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 
 internal class Program
@@ -13,7 +16,6 @@ internal class Program
 
         builder.Services.AddControllers();
 
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
          
@@ -30,13 +32,43 @@ internal class Program
         builder.Services.AddDbContext<ApplicationDBContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
 
+        builder.Services.AddScoped<ITasksRepository, TaskRepository>();
+
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Input your Bearer token to access this API"
+            });
+
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
-        {
+        {            
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI();            
 
             app.ApplyMigrations();
         }
