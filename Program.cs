@@ -32,6 +32,12 @@ internal class Program
         builder.Services.AddDbContext<ApplicationDBContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
 
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = "localhost:6379";
+            options.InstanceName = "SampleInstance";
+        });
+
         builder.Services.AddScoped<ITasksRepository, TaskRepository>();
 
         builder.Services.AddSwaggerGen(c =>
