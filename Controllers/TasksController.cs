@@ -1,15 +1,14 @@
-﻿using CleanArchitecture.Application.Repositories;
+﻿using CleanArchitecture.Application.Cache;
+using CleanArchitecture.Application.Repositories;
 using CleanArchitecture.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Microsoft.Extensions.Caching.Memory;
-using Task = CleanArchitecture.Domain.Models.Task;
 using Microsoft.Extensions.Caching.Distributed;
-using StackExchange.Redis;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using System.Security.Claims;
+using Task = CleanArchitecture.Domain.Models.Task;
 
 [ApiController]
 [Route("[controller]")]
@@ -19,21 +18,20 @@ public class TasksController : ControllerBase
     private readonly ITasksRepository _tasksRepository;
     private readonly IDistributedCache _distributedCache;
     private readonly UserManager<User> _userManager;
+    private readonly ICacheService _cacheService;
 
-    public TasksController(ITasksRepository tasksRepository, UserManager<User> userManager, IDistributedCache distributedCache)
+    public TasksController(ITasksRepository tasksRepository, UserManager<User> userManager, IDistributedCache distributedCache, ICacheService cacheService)
     {
         _tasksRepository = tasksRepository;
         _userManager = userManager;
         _distributedCache = distributedCache;
+        _cacheService = cacheService;
     }
 
     // GET: api/tasks
     [HttpGet]
     public async Task<IActionResult> GetAllTasks()
     {
-        var memoryCache = new MemoryCache(new MemoryCacheOptions());
-        string cacheKey = "task";
-
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null) return Unauthorized();
 
@@ -79,11 +77,22 @@ public class TasksController : ControllerBase
 
         tasks.Add(deserialized);
 
+        foreach (var taskItem in tasks)
+        {
+            await _cacheService.SetAsync();
+        }
+
         return Ok(tasks);
     }
 
-    // GET: api/tasks/{id}
-    [HttpGet("{id}")]
+    [HttpGet]
+    public async Task<IActionResult> GetPreviousTasks()
+    {
+    
+    }
+
+        // GET: api/tasks/{id}
+        [HttpGet("{id}")]
     public async Task<IActionResult> GetTaskById(string id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

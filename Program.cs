@@ -1,5 +1,7 @@
+using CleanArchitecture.Application.Cache;
 using CleanArchitecture.Application.Repositories;
 using CleanArchitecture.Domain.Models;
+using CleanArchitecture.Infrastructure.Cache;
 using CleanArchitecture.Infrastructure.Database;
 using CleanArchitecture.Infrastructure.Database.Repositories;
 using CleanArchitecture.Infrastructure.Extensions;
@@ -39,6 +41,7 @@ internal class Program
         });
 
         builder.Services.AddScoped<ITasksRepository, TaskRepository>();
+        builder.Services.AddScoped<ICacheService, InMemoryCacheService>();
 
         builder.Services.AddSwaggerGen(c =>
         {
